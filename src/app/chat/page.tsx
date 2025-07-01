@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+
+import { signOut, onAuthStateChanged, User } from "firebase/auth";
+import { db, auth } from "@/lib/firebase";
 import { ref, push, onValue } from "firebase/database";
 import { AddReaction, Send } from "@styled-icons/material";
 
@@ -10,6 +13,9 @@ import * as S from "./styled";
 export default function ChatPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const messagesRef = ref(db, "messages");
@@ -24,11 +30,33 @@ export default function ChatPage() {
     return () => unsubscribe();
   }, []);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      } else {
+        setCurrentUser(user);
+        setLoading(false);
+      }
+    });
+
+    return () => unsub();
+  }, [router]);
+
+  if (loading) return <p className="p-4">Carregando...</p>;
+
+  const sendMessage = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
     const messagesRef = ref(db, "messages");
     push(messagesRef, {
       text: input,
       createdAt: Date.now(),
+      user: {
+        uid: user.uid,
+        email: user.email,
+      },
     });
     setInput("");
   };
@@ -37,102 +65,23 @@ export default function ChatPage() {
     <S.Wrapper>
       <S.Container>
         <S.Main>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer $isOwner>
-            <S.Message $isOwner>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
-          <S.MessageContainer>
-            <S.Message>Olá Tudo bem? </S.Message>
-          </S.MessageContainer>
+          {messages.map((msg, i) => (
+            <S.MessageContainer
+              key={i}
+              $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+            >
+              <p>
+                <strong>{msg.user?.email || "Anônimo"}:</strong>
+              </p>
+              <S.Message
+                $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+              >
+                {msg.text}
+              </S.Message>
+            </S.MessageContainer>
+          ))}
+
+          <button onClick={() => signOut(auth)}>Sair</button>
         </S.Main>
         <S.Chat>
           <AddReaction size={30} />
