@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 import { signOut, onAuthStateChanged, User } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
@@ -45,20 +46,73 @@ export default function ChatPage() {
     return () => unsub();
   }, [router]);
 
+  useEffect(() => {
+    const fetchUserConfig = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const userRef = ref(db, `configUser/${user.uid}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const selected = languages.find((lang) => {
+          return lang.code === data.lang;
+        });
+        setSelected(selected ?? languages[0]);
+      }
+    };
+
+    fetchUserConfig();
+  }, []);
+
   if (loading) return <p className="p-4">Carregando...</p>;
 
   const sendMessage = async () => {
     const user = auth.currentUser;
     if (!user || input === "") return;
 
-    const messagesRef = ref(db, "messages");
-    push(messagesRef, {
+    const targetLang = "ko"; // ou dinâmico via config do usuário
+    const sourceLang = "auto";
+
+    const res = await axios.post("/api/translate", {
       text: input,
-      createdAt: Date.now(),
+      target: targetLang,
+      source: sourceLang,
+    });
+
+    const translated = res.data.traduction.translatedText;
+    const lang = res.data.traduction.detectedSourceLanguage;
+
+    console.log(res.data);
+
+    console.log({
+      text: input,
+      lang: lang,
+      traductions: {
+        ko: lang === "ko" ? input : translated,
+        "pt-BR": lang !== "ko" ? input : translated,
+      },
       user: {
         uid: user.uid,
         email: user.email,
       },
+      createdAt: Date.now(),
+    });
+
+    const messagesRef = ref(db, "messages");
+    push(messagesRef, {
+      text: input,
+      lang: lang,
+      traductions: {
+        ko: lang === "ko" ? input : translated,
+        "pt-BR": lang !== "ko" ? input : translated,
+      },
+      user: {
+        uid: user.uid,
+        email: user.email,
+      },
+      createdAt: Date.now(),
     });
     setInput("");
   };
@@ -86,6 +140,10 @@ export default function ChatPage() {
                     <S.MessageOwner>
                       <strong>{msg.user?.email || "Anônimo"}:</strong>
                     </S.MessageOwner>
+                    <S.MessageText>{msg.text}</S.MessageText>
+
+                    <hr />
+
                     <S.MessageText>{msg.text}</S.MessageText>
                   </S.Message>
                 </S.MessageContainer>

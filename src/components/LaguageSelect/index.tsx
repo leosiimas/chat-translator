@@ -9,7 +9,11 @@ const languages = [
   { code: "ko", name: "한국인", flag: "/flags/kr.png" },
 ];
 
-export default function LanguageSelector() {
+type LanguageSelectorProps = {
+  lang: string;
+};
+
+export default function LanguageSelector({ lang }: LanguageSelectorProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(languages[0]);
   const [userConfig, setUserConfig] = useState<any>(null);
@@ -29,24 +33,9 @@ export default function LanguageSelector() {
   };
 
   useEffect(() => {
-    const fetchUserConfig = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const userRef = ref(db, `configUser/${user.uid}`);
-      const snapshot = await get(userRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const selected = languages.find((lang) => {
-          return lang.code === data.lang;
-        });
-        setSelected(selected ?? languages[0]);
-      }
-    };
-
-    fetchUserConfig();
+    handleSelect(lang);
   }, []);
+
   return (
     <S.Wrapper>
       <S.Selector onClick={() => setOpen(!open)}>

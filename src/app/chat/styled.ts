@@ -119,7 +119,7 @@ export const MessageOwner = styled.p`
 
 export const MessageText = styled.p`
   ${({ theme }) => css`
-    font-size: ${theme.font.sizes.medium};
+    font-size: ${theme.font.sizes.xlarge};
   `}
 `;
 
