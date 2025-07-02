@@ -4,6 +4,9 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 
+import * as S from "./styled";
+import Link from "next/link";
+
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -19,15 +22,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Criar conta</h1>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input
-        type="password"
-        placeholder="Senha"
-        onChange={(e) => setSenha(e.target.value)}
-      />
-      <button onClick={register}>Registrar</button>
-    </div>
+    <S.Wrapper>
+      <S.Container>
+        <S.Title>CRIAR CONTA</S.Title>
+        <S.TextField
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <S.TextField
+          type="password"
+          placeholder="Senha"
+          onChange={(e) => setSenha(e.target.value)}
+        />
+        <S.Button onClick={register}>Registrar</S.Button>
+        <Link href={"/login"}>Login</Link>
+      </S.Container>
+    </S.Wrapper>
   );
 }

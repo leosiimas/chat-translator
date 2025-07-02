@@ -9,13 +9,31 @@ export const Wrapper = styled.div`
 export const Container = styled.div`
   ${({ theme }) => css`
     display: grid;
-    grid-template-rows: 1fr 10rem;
+    grid-template-rows: 10rem 1fr 10rem;
     height: 100vh;
 
     background-color: ${theme.colors.white};
 
     margin-left: 15%;
     margin-right: 15%;
+  `}
+`;
+
+export const Header = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    justify-content: space-between;
+    padding: ${theme.spacings.small};
+    border-bottom: 1px solid ${theme.colors.gray};
+    align-items: center;
+  `}
+`;
+
+export const User = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    justify-content: space-between;
+    padding: ${theme.spacings.small};
   `}
 `;
 
@@ -87,5 +105,37 @@ export const TextField = styled.input`
     font-size: ${theme.font.sizes.large};
     margin: 0 ${theme.spacings.small};
     width: 90%;
+  `}
+`;
+
+export const MessageOwner = styled.p`
+  ${({ theme }) => css`
+    font-weight: ${theme.font.bold};
+    font-size: ${theme.font.sizes.medium};
+
+    margin-bottom: ${theme.spacings.xxsmall};
+  `}
+`;
+
+export const MessageText = styled.p`
+  ${({ theme }) => css`
+    font-size: ${theme.font.sizes.medium};
+  `}
+`;
+
+export const Name = styled.div``;
+
+export const Language = styled.select``;
+
+export const Label = styled.label``;
+
+export const Exit = styled.div`
+  ${({ theme }) => css`
+    color: ${theme.colors.lightGray};
+    cursor: pointer;
+
+    &:hover {
+      color: ${theme.colors.primary};
+    }
   `}
 `;

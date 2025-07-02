@@ -4,6 +4,9 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 
+import * as S from "./styled";
+import Link from "next/link";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -19,15 +22,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input
-        type="password"
-        placeholder="Senha"
-        onChange={(e) => setSenha(e.target.value)}
-      />
-      <button onClick={login}>Entrar</button>
-    </div>
+    <S.Wrapper>
+      <S.Container>
+        <S.Title>LOGIN</S.Title>
+        <S.TextField
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <S.TextField
+          type="password"
+          placeholder="Senha"
+          onChange={(e) => setSenha(e.target.value)}
+        />
+        <S.Button onClick={login}>Entrar</S.Button>
+
+        <Link href={"/register"}>Registrar</Link>
+      </S.Container>
+    </S.Wrapper>
   );
 }

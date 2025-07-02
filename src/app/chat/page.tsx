@@ -6,14 +6,16 @@ import { useRouter } from "next/navigation";
 import { signOut, onAuthStateChanged, User } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { ref, push, onValue } from "firebase/database";
-import { AddReaction, Send } from "@styled-icons/material";
+import { AddReaction, Send, Logout } from "@styled-icons/material";
+
+import LanguageSelector from "@/components/LaguageSelect";
 
 import * as S from "./styled";
 
 export default function ChatPage() {
+  const router = useRouter();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
@@ -47,7 +49,7 @@ export default function ChatPage() {
 
   const sendMessage = async () => {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user || input === "") return;
 
     const messagesRef = ref(db, "messages");
     push(messagesRef, {
@@ -64,24 +66,31 @@ export default function ChatPage() {
   return (
     <S.Wrapper>
       <S.Container>
+        <S.Header>
+          <LanguageSelector />
+          <S.Exit onClick={() => signOut(auth)}>
+            <Logout size={30} />
+          </S.Exit>
+        </S.Header>
         <S.Main>
-          {messages.map((msg, i) => (
-            <S.MessageContainer
-              key={i}
-              $isOwner={msg.user && msg.user.uid === currentUser?.uid}
-            >
-              <p>
-                <strong>{msg.user?.email || "Anônimo"}:</strong>
-              </p>
-              <S.Message
-                $isOwner={msg.user && msg.user.uid === currentUser?.uid}
-              >
-                {msg.text}
-              </S.Message>
-            </S.MessageContainer>
-          ))}
-
-          <button onClick={() => signOut(auth)}>Sair</button>
+          {messages.map(
+            (msg, i) =>
+              msg.user && (
+                <S.MessageContainer
+                  key={i}
+                  $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+                >
+                  <S.Message
+                    $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+                  >
+                    <S.MessageOwner>
+                      <strong>{msg.user?.email || "Anônimo"}:</strong>
+                    </S.MessageOwner>
+                    <S.MessageText>{msg.text}</S.MessageText>
+                  </S.Message>
+                </S.MessageContainer>
+              )
+          )}
         </S.Main>
         <S.Chat>
           <AddReaction size={30} />
