@@ -1,60 +1,52 @@
-import { useState, useEffect } from "react";
-import { db, auth } from "@/lib/firebase";
-import { ref, update, get } from "firebase/database";
+"use client";
 
-import * as S from "./styled";
+import { useState } from "react";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Box,
+  Typography,
+  SelectChangeEvent,
+} from "@mui/material";
 
-const languages = [
-  { code: "pt-BR", name: "Português (Brasil)", flag: "/flags/br.png" },
-  { code: "ko", name: "한국인", flag: "/flags/kr.png" },
-];
+export default function LaguageSelect() {
+  const [country, setCountry] = useState("br");
 
-type LanguageSelectorProps = {
-  lang: string;
-};
-
-export default function LanguageSelector({ lang }: LanguageSelectorProps) {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(languages[0]);
-  const [userConfig, setUserConfig] = useState<any>(null);
-
-  const handleSelect = async (lang: any) => {
-    setSelected(lang);
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const userRef = ref(db, `configUser/${user.uid}`);
-    await update(userRef, {
-      lang: lang.code,
-    });
-
-    setOpen(false);
+  const handleChange = (event: SelectChangeEvent) => {
+    setCountry(event.target.value);
   };
 
-  useEffect(() => {
-    handleSelect(lang);
-  }, []);
-
   return (
-    <S.Wrapper>
-      <S.Selector onClick={() => setOpen(!open)}>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <S.Flag src={selected.flag} alt={selected.name} />
-          {selected.name}
-        </div>
-        <span>▾</span>
-      </S.Selector>
-      {open && (
-        <S.Options>
-          {languages.map((lang) => (
-            <S.Option key={lang.code} onClick={() => handleSelect(lang)}>
-              <S.Flag src={lang.flag} alt={lang.name} />
-              {lang.name}
-            </S.Option>
-          ))}
-        </S.Options>
-      )}
-    </S.Wrapper>
+    <FormControl size="small">
+      <Select
+        labelId="select-country-label"
+        id="select-country"
+        value={country}
+        onChange={handleChange}
+      >
+        <MenuItem value="br">
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img
+              src="/flags/br.png"
+              alt="Brasil"
+              style={{ width: 24, height: 16, marginRight: 8 }}
+            />
+            <Typography>Brasil</Typography>
+          </Box>
+        </MenuItem>
+        <MenuItem value="kr">
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img
+              src="/flags/kr.png"
+              alt="Coreia do Sul"
+              style={{ width: 24, height: 16, marginRight: 8 }}
+            />
+            <Typography>Coreia do Sul</Typography>
+          </Box>
+        </MenuItem>
+      </Select>
+    </FormControl>
   );
 }

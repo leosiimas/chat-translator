@@ -1,4 +1,5 @@
-import StyledComponentsRegistry from "./lib/registry";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+
 import { Providers } from "./providers";
 
 export const metadata = {
@@ -14,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>
+        <AppRouterCacheProvider>
           <Providers>{children}</Providers>
-        </StyledComponentsRegistry>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

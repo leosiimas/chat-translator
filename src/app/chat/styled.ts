@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
 export const Container = styled.div`
   ${({ theme }) => css`
     display: grid;
-    grid-template-rows: 10rem 1fr 10rem;
+    grid-template-rows: 10rem 1fr 1fr;
     height: 100vh;
 
     background-color: ${theme.colors.white};
@@ -49,11 +49,11 @@ export const Main = styled.div`
 `;
 
 type MessageProps = {
-  $isOwner?: Boolean;
+  $isOwner?: boolean;
 };
 
 export const MessageContainer = styled.div<MessageProps>`
-  ${({ theme, $isOwner }) => css`
+  ${({ $isOwner }) => css`
     display: flex;
 
     justify-content: ${$isOwner ? "flex-end" : "flex-start"};
@@ -95,7 +95,24 @@ export const Chat = styled.div`
   `}
 `;
 
-export const TextField = styled.input`
+type SendProps = {
+  $active: boolean;
+};
+
+export const Send = styled.div<SendProps>`
+  ${({ theme, $active }) => css`
+    svg {
+      color: ${$active ? theme.colors.primary : theme.colors.lightGray};
+      cursor: pointer;
+
+      &:hover {
+        color: ${theme.colors.primary};
+      }
+    }
+  `}
+`;
+
+export const TextField = styled.textarea`
   ${({ theme }) => css`
     all: unset;
     appearance: none;

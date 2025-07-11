@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios, { AxiosError } from "axios";
-import { error } from "console";
+import axios from "axios";
 
 export async function POST(req: NextRequest) {
-  console.log("here");
   const { text, target, source } = await req.json();
   const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
 
+  console.log("here");
+  console.log(apiKey);
   console.log({
     q: text,
+    source,
     target,
     format: "text",
   });
@@ -18,6 +19,7 @@ export async function POST(req: NextRequest) {
     {
       q: text,
       target,
+      source,
       format: "text",
     }
   );

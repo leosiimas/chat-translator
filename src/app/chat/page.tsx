@@ -6,20 +6,28 @@ import axios from "axios";
 
 import { signOut, onAuthStateChanged, User } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
-import { ref, push, onValue } from "firebase/database";
+import { ref, push, onValue, get } from "firebase/database";
 import { AddReaction, Send, Logout } from "@styled-icons/material";
 
 import LanguageSelector from "@/components/LaguageSelect";
 
 import * as S from "./styled";
 
+type UserProps = {
+  user: User | null;
+  userName?: string;
+  userLang?: string;
+};
+
 export default function ChatPage() {
   const router = useRouter();
   const [input, setInput] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProps | null>(null);
 
+  // Busca as Mensagens
   useEffect(() => {
     const messagesRef = ref(db, "messages");
     const unsubscribe = onValue(messagesRef, (snapshot) => {
@@ -33,12 +41,13 @@ export default function ChatPage() {
     return () => unsubscribe();
   }, []);
 
+  // Busca Autenticação do usuário
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/login");
       } else {
-        setCurrentUser(user);
+        setCurrentUser({ ...currentUser, user: user });
         setLoading(false);
       }
     });
@@ -46,9 +55,10 @@ export default function ChatPage() {
     return () => unsub();
   }, [router]);
 
+  // Busca Informações do Usuario
   useEffect(() => {
     const fetchUserConfig = async () => {
-      const user = auth.currentUser;
+      const user = currentUser?.user;
       if (!user) return;
 
       const userRef = ref(db, `configUser/${user.uid}`);
@@ -56,24 +66,31 @@ export default function ChatPage() {
 
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const selected = languages.find((lang) => {
-          return lang.code === data.lang;
+        setCurrentUser({
+          ...currentUser,
+          userLang: data.lang,
+          userName: data.name,
         });
-        setSelected(selected ?? languages[0]);
       }
     };
 
     fetchUserConfig();
-  }, []);
+  });
 
-  if (loading) return <p className="p-4">Carregando...</p>;
+  if (loading) return <p>Carregando...</p>;
 
   const sendMessage = async () => {
     const user = auth.currentUser;
     if (!user || input === "") return;
 
-    const targetLang = "ko"; // ou dinâmico via config do usuário
-    const sourceLang = "auto";
+    const targetLang = currentUser?.userLang === "ko" ? "pt-BR" : "ko";
+    const sourceLang = currentUser?.userLang ?? "auto";
+
+    console.log({
+      text: input,
+      target: targetLang,
+      source: sourceLang,
+    });
 
     const res = await axios.post("/api/translate", {
       text: input,
@@ -82,23 +99,8 @@ export default function ChatPage() {
     });
 
     const translated = res.data.traduction.translatedText;
-    const lang = res.data.traduction.detectedSourceLanguage;
-
-    console.log(res.data);
-
-    console.log({
-      text: input,
-      lang: lang,
-      traductions: {
-        ko: lang === "ko" ? input : translated,
-        "pt-BR": lang !== "ko" ? input : translated,
-      },
-      user: {
-        uid: user.uid,
-        email: user.email,
-      },
-      createdAt: Date.now(),
-    });
+    const lang =
+      currentUser?.userLang ?? res.data.traduction.detectedSourceLanguage;
 
     const messagesRef = ref(db, "messages");
     push(messagesRef, {
@@ -121,7 +123,7 @@ export default function ChatPage() {
     <S.Wrapper>
       <S.Container>
         <S.Header>
-          <LanguageSelector />
+          <LanguageSelector lang={currentUser?.userLang} />
           <S.Exit onClick={() => signOut(auth)}>
             <Logout size={30} />
           </S.Exit>
@@ -132,19 +134,24 @@ export default function ChatPage() {
               msg.user && (
                 <S.MessageContainer
                   key={i}
-                  $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+                  $isOwner={msg.user && msg.user.uid === currentUser?.user?.uid}
                 >
                   <S.Message
-                    $isOwner={msg.user && msg.user.uid === currentUser?.uid}
+                    $isOwner={
+                      msg.user && msg.user.uid === currentUser?.user?.uid
+                    }
                   >
                     <S.MessageOwner>
                       <strong>{msg.user?.email || "Anônimo"}:</strong>
                     </S.MessageOwner>
                     <S.MessageText>{msg.text}</S.MessageText>
 
-                    <hr />
-
-                    <S.MessageText>{msg.text}</S.MessageText>
+                    {msg.lang && msg.lang !== currentUser?.userLang && (
+                      <>
+                        <hr />
+                        <S.MessageText>{msg.traductions.ko}</S.MessageText>
+                      </>
+                    )}
                   </S.Message>
                 </S.MessageContainer>
               )
@@ -155,16 +162,11 @@ export default function ChatPage() {
           <S.TextField
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            type="text"
             placeholder="Digite uma mensagem"
           />
-          <Send size={30} onClick={sendMessage} />
+          <S.Send $active={input !== ""}>
+            <Send size={30} onClick={sendMessage} />
+          </S.Send>
         </S.Chat>
       </S.Container>
     </S.Wrapper>
