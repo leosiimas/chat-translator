@@ -1,11 +1,15 @@
 "use client";
+
+
+import { useTranslations } from "next-intl";
+
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-
 import { Lock, Mail, Chat } from "@mui/icons-material";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
+
 import LaguageSelect from "@/components/LaguageSelect";
 
 export default function LoginPage() {
@@ -14,10 +18,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const t = useTranslations();
+
   const login = async () => {
     setLoading(true);
     await signInWithEmailAndPassword(auth, email, senha);
-    router.push("/chat");
+    router.push("/");
   };
 
   return (
@@ -62,7 +68,7 @@ export default function LoginPage() {
                 mb: 3,
               }}
             >
-              Bem Vindo!!!
+              {t("welcome")}
             </Box>
           </Box>
         </Typography>
@@ -72,7 +78,7 @@ export default function LoginPage() {
             <Mail sx={{ mr: 1, fontSize: 20 }} />
             <TextField
               fullWidth
-              label="Email"
+              label={t("email")}
               type="email"
               variant="outlined"
               value={email}
@@ -84,7 +90,7 @@ export default function LoginPage() {
             <Lock sx={{ mr: 1, fontSize: 20 }} />
             <TextField
               fullWidth
-              label="Senha"
+              label={t("password")}
               type="password"
               variant="outlined"
               value={senha}
@@ -99,7 +105,7 @@ export default function LoginPage() {
             onClick={login}
             loading={loading}
           >
-            Entrar
+            {t("enter")}
           </Button>
         </Box>
       </Paper>

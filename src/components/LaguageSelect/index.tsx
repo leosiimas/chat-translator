@@ -1,9 +1,7 @@
 "use client";
-
-import { useState } from "react";
+import { useLanguage } from "@/app/providers/i18n-provider";
 import {
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   Box,
@@ -12,10 +10,10 @@ import {
 } from "@mui/material";
 
 export default function LaguageSelect() {
-  const [country, setCountry] = useState("br");
+  const { locale, setLocale } = useLanguage();
 
   const handleChange = (event: SelectChangeEvent) => {
-    setCountry(event.target.value);
+    setLocale(event.target.value);
   };
 
   return (
@@ -23,10 +21,10 @@ export default function LaguageSelect() {
       <Select
         labelId="select-country-label"
         id="select-country"
-        value={country}
+        value={locale}
         onChange={handleChange}
       >
-        <MenuItem value="br">
+        <MenuItem value="pt">
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <img
               src="/flags/br.png"
@@ -36,14 +34,14 @@ export default function LaguageSelect() {
             <Typography>Brasil</Typography>
           </Box>
         </MenuItem>
-        <MenuItem value="kr">
+        <MenuItem value="ko">
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <img
               src="/flags/kr.png"
               alt="Coreia do Sul"
               style={{ width: 24, height: 16, marginRight: 8 }}
             />
-            <Typography>Coreia do Sul</Typography>
+            <Typography>브라질</Typography>
           </Box>
         </MenuItem>
       </Select>
