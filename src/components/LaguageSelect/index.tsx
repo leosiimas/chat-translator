@@ -17,7 +17,11 @@ export default function LaguageSelect() {
   const { locale, setLocale } = useLanguage();
 
   const handleChange = (event: SelectChangeEvent) => {
-    if (user) updateLanguageUser(event.target.value);
+    console.log("heeeeeeeeeeeeeeeeeere");
+    if (user) {
+      console.log("here");
+      updateLanguageUser(event.target.value);
+    }
     setLocale(event.target.value);
   };
 
@@ -34,6 +38,8 @@ export default function LaguageSelect() {
             <Image
               src="/flags/br.png"
               alt="Brasil"
+              width={20}
+              height={20}
               style={{ width: 24, height: 16, marginRight: 8 }}
             />
             <Typography>Brasil</Typography>
@@ -44,6 +50,8 @@ export default function LaguageSelect() {
             <Image
               src="/flags/kr.png"
               alt="Coreia do Sul"
+              width={20}
+              height={20}
               style={{ width: 24, height: 16, marginRight: 8 }}
             />
             <Typography>브라질</Typography>

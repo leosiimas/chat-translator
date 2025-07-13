@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 import {  User as UserFirebase } from "firebase/auth";
+import { db } from "@/lib/firebase";
+import { ref, update } from "firebase/database";
 
 type User = {
   user: UserFirebase | null;
@@ -22,17 +24,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const updateLanguageUser = async (language: string) => {
-
-    if ((language === 'pt' || language === 'ko') && user) {
+    console.log("here");
+    if ((language === "pt" || language === "ko") && user && user.user) {
       setUser({ ...user, userLang: language });
 
+      const userRef = ref(db, `configUser/${user.user?.uid}`);
+      await update(userRef, {
+        lang: "pt",
+      });
     }
-
-
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateLanguageUser  }}>
+    <UserContext.Provider value={{ user, setUser, updateLanguageUser }}>
       {children}
     </UserContext.Provider>
   );
