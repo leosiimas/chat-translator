@@ -1,12 +1,13 @@
 "use client";
 
-
-import { useTranslations } from "next-intl";
-
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+
 import { Lock, Mail, Chat } from "@mui/icons-material";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 
@@ -107,6 +108,18 @@ export default function LoginPage() {
           >
             {t("enter")}
           </Button>
+
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mt: 3,
+            }}
+          >
+            <Link href="/register">{t("register")}</Link>
+          </Box>
         </Box>
       </Paper>
     </Box>

@@ -1,52 +1,63 @@
 import { Box, Avatar, Paper } from "@mui/material";
+import { Translate } from "@mui/icons-material";
 
 export type MessageProps = {
-  message: string
-  name: string
-  avatar: string
-  date: string
-  isOwner: boolean
-}
+  uid: string;
+  sourceLang: string;
+  message: string;
+  messageTranslated?: string;
+  name: string;
+  avatar: string;
+  date: string;
+  isOwner: boolean;
+  translateMessage?: (uid: MessageProps) => void;
+};
 
 export default function Message({
- message,
- name,
- avatar,
- date,
- isOwner
+  uid,
+  message,
+  sourceLang,
+  name,
+  avatar,
+  date,
+  isOwner,
+  messageTranslated,
+  translateMessage,
 }: MessageProps) {
-
   return (
     <Box
       sx={{
-        display: 'flex',
+        display: "flex",
         marginTop: 3,
         marginBottom: 3,
-        flexDirection: isOwner ?  'row-reverse' : 'row'
+        flexDirection: isOwner ? "row-reverse" : "row",
       }}
     >
-      <Avatar 
-        alt="Remy Sharp" 
-        src={avatar} 
+      <Avatar
+        alt="Remy Sharp"
+        src={avatar}
         sx={{
-          width: 60, height: 60,
+          width: 60,
+          height: 60,
           marginRight: isOwner ? 0 : 2,
-          marginLeft: isOwner ? 2 : 0
-        }} 
+          marginLeft: isOwner ? 2 : 0,
+        }}
       />
+
       <Box
         sx={{
-          width: 'fit-content',
-          maxWidth: '50%',
-          display: 'flex',
-          flexDirection: 'column'
+          width: "fit-content",
+          maxWidth: "50%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "end",
         }}
-      >          
+      >
         <Box
           sx={{
             marginBottom: 1,
-            float: 'right',
-            alignSelf: isOwner ? 'flex-end' : 'flex-start',
+            float: "right",
+            alignSelf: isOwner ? "flex-end" : "flex-start",
           }}
         >
           {name} - {date}
@@ -54,14 +65,50 @@ export default function Message({
         <Paper
           elevation={3}
           sx={{
-            padding: '10px',
-            wordBreak: 'break-word',
-            whiteSpace: 'normal',
+            padding: "10px",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
           }}
         >
-         {message}
+          {message}
+
+          {!isOwner && messageTranslated && (
+            <>
+              <hr />
+              <div>{messageTranslated}</div>
+            </>
+          )}
         </Paper>
       </Box>
+
+      {!isOwner && translateMessage && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "end",
+            marginLeft: 1,
+            marginRight: 1,
+            color: "gray.800",
+            cursor: "pointer",
+            "&:hover": {
+              color: "primary.main",
+            },
+          }}
+          onClick={() =>
+            translateMessage({
+              uid,
+              sourceLang,
+              message,
+              name,
+              avatar,
+              date,
+              isOwner,
+            })
+          }
+        >
+          <Translate />
+        </Box>
+      )}
     </Box>
-  )
+  );
 }

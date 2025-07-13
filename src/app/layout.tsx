@@ -1,6 +1,6 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { I18nProvider } from "@/app/providers/i18n-provider";
-
+import { UserProvider } from "@/app/providers/user-provider";
 import { Providers } from "./providers";
 
 export const metadata = {
@@ -16,11 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <I18nProvider>
-          <AppRouterCacheProvider>
-            <Providers>{children}</Providers>
-          </AppRouterCacheProvider>
-        </I18nProvider>
+        <UserProvider>
+          <I18nProvider>
+            <AppRouterCacheProvider>
+              <Providers>{children}</Providers>
+            </AppRouterCacheProvider>
+          </I18nProvider>
+        </UserProvider>
       </body>
     </html>
   );

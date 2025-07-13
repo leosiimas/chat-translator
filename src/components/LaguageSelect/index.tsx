@@ -1,5 +1,6 @@
 "use client";
 import { useLanguage } from "@/app/providers/i18n-provider";
+import { useUser } from "@/app/providers/user-provider";
 import {
   FormControl,
   MenuItem,
@@ -10,9 +11,11 @@ import {
 } from "@mui/material";
 
 export default function LaguageSelect() {
+  const { user, updateLanguageUser } = useUser();
   const { locale, setLocale } = useLanguage();
 
   const handleChange = (event: SelectChangeEvent) => {
+    if (user) updateLanguageUser(event.target.value);
     setLocale(event.target.value);
   };
 
@@ -21,7 +24,7 @@ export default function LaguageSelect() {
       <Select
         labelId="select-country-label"
         id="select-country"
-        value={locale}
+        value={user ? user?.userLang : locale}
         onChange={handleChange}
       >
         <MenuItem value="pt">

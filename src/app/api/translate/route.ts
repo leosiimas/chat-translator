@@ -14,16 +14,24 @@ export async function POST(req: NextRequest) {
     format: "text",
   });
 
-  const res = await axios.post(
-    `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
-    {
-      q: text,
-      target,
-      source,
-      format: "text",
-    }
-  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let traduction: any;
 
-  const traduction = res?.data.data.translations[0];
+  try {
+    const res = await axios.post(
+      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+      {
+        q: text,
+        target,
+        source,
+        format: "text",
+      },
+    );
+
+    traduction = res?.data.data.translations[0];
+  } catch (e) {
+    console.log(e);
+  }
+
   return NextResponse.json({ traduction });
 }

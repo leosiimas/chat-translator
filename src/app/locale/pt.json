@@ -2,7 +2,13 @@
   "welcome": "Seja Bem Vindo!!!",
   "email": "Email",
   "password": "Senha",
+  "confirmPassword": "Confirme a Senha",
   "enter": "Entrar",
   "korean": "Coreia",
-  "brazil": "Brasil"
+  "brazil": "Brasil",
+  "register": "Registrar",
+  "login": "Login",
+  "name": "Nome",
+  "typeAMessage": "Digite uma mensagem...",
+  "autoTranslation": "Tradução Automatica"
 }

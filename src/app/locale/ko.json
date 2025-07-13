@@ -1,8 +1,14 @@
 {
- "welcome": "환영합니다!!!",
-   "email": "이메일",
+  "welcome": "환영합니다!!!",
+  "email": "이메일",
   "password": "비밀번호",
-    "enter": "들어가다",
-      "korean": "브라질",
-  "brazil": "한국"
+  "confirmPassword": "비밀번호 확인",
+  "enter": "들어가다",
+  "korean": "브라질",
+  "brazil": "한국",
+  "register": "등록하다",
+  "login": "로그인",
+  "name": "이름",
+  "typeAMessage": "메시지를 입력하세요...",
+  "autoTranslation": "기계 번역"
 }
