@@ -1,4 +1,6 @@
 "use client";
+
+import Image from "next/image";
 import { useLanguage } from "@/app/providers/i18n-provider";
 import { useUser } from "@/app/providers/user-provider";
 import {
@@ -29,7 +31,7 @@ export default function LaguageSelect() {
       >
         <MenuItem value="pt">
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img
+            <Image
               src="/flags/br.png"
               alt="Brasil"
               style={{ width: 24, height: 16, marginRight: 8 }}
@@ -39,7 +41,7 @@ export default function LaguageSelect() {
         </MenuItem>
         <MenuItem value="ko">
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img
+            <Image
               src="/flags/kr.png"
               alt="Coreia do Sul"
               style={{ width: 24, height: 16, marginRight: 8 }}

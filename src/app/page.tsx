@@ -114,7 +114,7 @@ export default function ChatPage() {
     });
 
     return () => unsub();
-  }, [router]);
+  }, [router, setUser]);
 
   // Carregamento das mensagens
   useEffect(() => {

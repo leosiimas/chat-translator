@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { signOut} from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 import { Logout } from "@mui/icons-material";
 import { Box, Avatar, Checkbox, FormControlLabel } from "@mui/material";
@@ -17,19 +18,19 @@ export default function Header() {
    const { user } = useUser();
 
   return (
-    <Box 
+    <Box
       sx={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         paddingLeft: 5,
         paddingRight: 5,
-        justifyContent: 'space-between'
+        justifyContent: "space-between",
       }}
     >
-      <Box 
+      <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center'
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <Avatar
@@ -42,24 +43,30 @@ export default function Header() {
         />
         <Box
           sx={{
-            marginLeft: 2
+            marginLeft: 2,
           }}
         >
           {user?.userName}
         </Box>
-     </Box>
-     <Box>
-       <LaguageSelect />
-      <FormControlLabel sx={{marginLeft: 2}} control={<Checkbox defaultChecked />} label={t('autoTranslation')} />
-     </Box>
-     <Logout 
-        sx={{ 
+      </Box>
+      <Box>
+        <LaguageSelect />
+        <FormControlLabel
+          sx={{ marginLeft: 2 }}
+          control={<Checkbox defaultChecked />}
+          label={t("autoTranslation")}
+        />
+      </Box>
+      <Logout
+        onClick={() => signOut(auth)}
+        sx={{
           fontSize: 30,
-          cursor: 'pointer',
+          cursor: "pointer",
           "&:hover": {
             color: "primary.main",
-          }, 
-        }} />
+          },
+        }}
+      />
     </Box>
   );
 }
