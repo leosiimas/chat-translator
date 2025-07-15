@@ -10,11 +10,19 @@ const GlobalStyles = createGlobalStyle`
   }
 
   html {
-    font-size: 62.5%;
+    font-size: 15px;
   }
 
   html, border-style, #__next {
     height: 100%;
+  }
+
+  html,
+  body,
+  #__next {
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   body {

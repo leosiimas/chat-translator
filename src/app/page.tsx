@@ -8,8 +8,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { ref, onValue, get, update } from "firebase/database";
 
-import { Paper } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Paper, CircularProgress, Box } from "@mui/material";
 
 import Chat from "@/components/Chat";
 import Conversation from "@/components/Conversation";
@@ -49,12 +48,12 @@ export default function ChatPage() {
 
   const translateMessage = useCallback(
     async (message: MessageProps) => {
-      if (!message) return;
+      if (!message) return true;
 
       const targetLang = user?.userLang ?? "pt";
       const sourceLang = message.sourceLang;
 
-      if (targetLang === sourceLang) return;
+      if (targetLang === sourceLang) return true;
 
       try {
         const res = await axios.post("/api/translate", {
@@ -85,9 +84,13 @@ export default function ChatPage() {
             },
           });
         }
+
+        return true;
       } catch (err) {
         console.error("Erro ao traduzir:", err);
       }
+
+      return true;
     },
     [user],
   );
@@ -147,14 +150,6 @@ export default function ChatPage() {
               }
             }
 
-            /* 
-            
-              messageTranslated:
-                - conferir se a lang do texto é o mesmo do usuário
-                - Caso nao seja, pegar em transactions, a tradução correspondente a currentUserLang
-                  - Se nao tiver "" (implemebntar auto translate)
-            */
-
             let messageTranslated = "";
 
             if (user.userLang && msg.lang !== user.userLang) {
@@ -188,7 +183,22 @@ export default function ChatPage() {
     return () => unsubscribe();
   }, [user, translateMessage]);
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          height: "100vh",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "#f5f5f5",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   if (!user) return <p>Error...</p>;
 
   return (
@@ -198,7 +208,7 @@ export default function ChatPage() {
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        height: "100vh",
+        height: "100%",
         bgcolor: "#f5f5f5",
       }}
     >
@@ -206,8 +216,8 @@ export default function ChatPage() {
         elevation={3}
         sx={{
           display: "grid",
-          gridTemplateRows: "80px 1fr auto",
-          height: "100vh",
+          gridTemplateRows: "80px 1fr 80px",
+          height: "100%",
           maxWidth: 1200,
           width: "100%",
         }}

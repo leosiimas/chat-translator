@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { ref, update } from "firebase/database";
 
+import { auth, db } from "@/lib/firebase";
 import { Chat, Mail, Lock, Person } from "@mui/icons-material";
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 
 import LaguageSelect from "@/components/LaguageSelect";
-import { ref, update } from "firebase/database";
+import { useLanguage } from "../providers/i18n-provider";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [avatar] = useState("");
 
+  const { locale } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -43,7 +45,7 @@ export default function RegisterPage() {
 
       const userRef = ref(db, `configUser/${userCredencial.user.uid}`);
       await update(userRef, {
-        lang: "pt",
+        lang: locale,
         name,
         email,
         avatar,

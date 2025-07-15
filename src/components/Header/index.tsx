@@ -1,8 +1,8 @@
-"use Client"
+"use Client";
 
 import { useTranslations } from "next-intl";
 
-import { signOut} from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 import { Logout } from "@mui/icons-material";
@@ -13,17 +13,16 @@ import LaguageSelect from "../LaguageSelect";
 import { useUser } from "@/app/providers/user-provider";
 
 export default function Header() {
-
   const t = useTranslations();
-   const { user } = useUser();
+  const { user } = useUser();
 
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        paddingLeft: 5,
-        paddingRight: 5,
+        paddingLeft: { xs: 1, sm: 2 },
+        paddingRight: { xs: 1, sm: 2 },
         justifyContent: "space-between",
       }}
     >
@@ -49,7 +48,13 @@ export default function Header() {
           {user?.userName}
         </Box>
       </Box>
-      <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: "center",
+        }}
+      >
         <LaguageSelect />
         <FormControlLabel
           sx={{ marginLeft: 2 }}

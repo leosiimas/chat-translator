@@ -17,7 +17,6 @@ export default function LaguageSelect() {
   const { locale, setLocale } = useLanguage();
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log("heeeeeeeeeeeeeeeeeere");
     if (user) {
       console.log("here");
       updateLanguageUser(event.target.value);

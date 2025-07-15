@@ -1,7 +1,7 @@
-"use Client"
+"use Client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 
 import { InsertEmoticon, Send } from "@mui/icons-material";
 import { Box, TextField } from "@mui/material";
@@ -53,7 +53,7 @@ export default function Chat() {
       <InsertEmoticon
         sx={{
           marginRight: "10px",
-          fontSize: 30,
+          fontSize: 40,
           cursor: "pointer",
           "&:hover": {
             color: "primary.main",
@@ -69,13 +69,21 @@ export default function Chat() {
         placeholder={t("typeAMessage")}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        }}
+        sx={{
+          fontSize: 20,
+        }}
       />
-
       <Send
         onClick={() => sendMessage()}
         sx={{
           marginLeft: "10px",
-          fontSize: 30,
+          fontSize: 40,
           cursor: "pointer",
           color: message !== "" ? "primary.main" : "primary.secondary",
           "&:hover": {

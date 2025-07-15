@@ -1,5 +1,6 @@
-import { Box, Avatar, Paper } from "@mui/material";
+import { Box, Avatar, Paper, CircularProgress } from "@mui/material";
 import { Translate } from "@mui/icons-material";
+import { useState } from "react";
 
 export type MessageProps = {
   uid: string;
@@ -10,7 +11,7 @@ export type MessageProps = {
   avatar: string;
   date: string;
   isOwner: boolean;
-  translateMessage?: (uid: MessageProps) => void;
+  translateMessage?: (uid: MessageProps) => Promise<boolean>;
 };
 
 export default function Message({
@@ -24,6 +25,41 @@ export default function Message({
   messageTranslated,
   translateMessage,
 }: MessageProps) {
+  const [loading, setLoading] = useState(false);
+
+  const dateTimeFormat = (timestemp: string): string => {
+    const date = new Date(timestemp);
+
+    const formatter = new Intl.DateTimeFormat("pt-PT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+    return formatter.format(date).replace(",", "");
+  };
+
+  const handleTranslate = async () => {
+    setLoading(true);
+
+    if (translateMessage) {
+      await translateMessage({
+        uid,
+        sourceLang,
+        message,
+        name,
+        avatar,
+        date,
+        isOwner,
+      });
+    }
+
+    setLoading(false);
+  };
+
   return (
     <Box
       sx={{
@@ -58,57 +94,74 @@ export default function Message({
             marginBottom: 1,
             float: "right",
             alignSelf: isOwner ? "flex-end" : "flex-start",
+            fontSize: 15,
           }}
         >
-          {name} - {date}
+          {name} - {dateTimeFormat(date)}
         </Box>
         <Paper
           elevation={3}
           sx={{
-            padding: "10px",
+            padding: "12px",
             wordBreak: "break-word",
             whiteSpace: "normal",
+            fontSize: 18,
+            borderRadius: 4,
           }}
         >
           {message}
 
           {!isOwner && messageTranslated && (
             <>
-              <hr />
-              <div>{messageTranslated}</div>
+              <Box
+                component="hr"
+                sx={{
+                  border: "none",
+                  borderTop: "1px dotted #0c0b0b",
+                  my: 2,
+                }}
+              />
+              <Box>{messageTranslated}</Box>
             </>
           )}
         </Paper>
       </Box>
 
-      {!isOwner && translateMessage && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "end",
-            marginLeft: 1,
-            marginRight: 1,
-            color: "gray.800",
-            cursor: "pointer",
-            "&:hover": {
-              color: "primary.main",
-            },
-          }}
-          onClick={() =>
-            translateMessage({
-              uid,
-              sourceLang,
-              message,
-              name,
-              avatar,
-              date,
-              isOwner,
-            })
-          }
-        >
-          <Translate />
-        </Box>
-      )}
+      {!isOwner &&
+        translateMessage &&
+        (loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "end",
+              marginLeft: 1,
+              marginRight: 1,
+            }}
+          >
+            <CircularProgress size={15} />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "end",
+              marginLeft: 1,
+              marginRight: 1,
+            }}
+          >
+            <Translate
+              onClick={() => handleTranslate()}
+              sx={{
+                fontSize: 18,
+                color: "gray.800",
+                cursor: "pointer",
+                "&:hover": {
+                  color: "primary.main",
+                },
+              }}
+            />
+          </Box>
+        ))}
     </Box>
   );
 }
