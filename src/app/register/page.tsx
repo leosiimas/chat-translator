@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -151,6 +151,12 @@ export default function RegisterPage() {
               variant="outlined"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  register();
+                }
+              }}
             />
           </Box>
 

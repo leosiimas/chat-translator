@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -96,6 +96,12 @@ export default function LoginPage() {
               variant="outlined"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
+              onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  login();
+                }
+              }}
             />
           </Box>
 
