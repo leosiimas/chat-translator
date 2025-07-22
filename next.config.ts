@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
   },
+  redirects: async () => [],
+  rewrites: async () => [
+    {
+      source: "/:path*",
+      destination: "/:path*",
+    },
+  ],
   i18n,
 };
 
